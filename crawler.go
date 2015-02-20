@@ -91,7 +91,9 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 		}
 		lastUpdate = issues[0].UpdatedOn
 
-		issues = Filter(issues, c.Selector.Select)
+		if c.Selector != nil {
+			issues = Filter(issues, c.Selector.Select)
+		}
 		for i := len(issues) - 1; i >= 0; i-- {
 			err = c.Outputter.Output(issues[i])
 			if err != nil {
