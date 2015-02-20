@@ -103,6 +103,6 @@ func TestFilterIssues(t *testing.T) {
 	}
 
 	if issue3 != filtered[1] {
-		t.Errorf("1st element of filtered issues is not issue3")
+		t.Errorf("2nd element of filtered issues is not issue3")
 	}
 }
