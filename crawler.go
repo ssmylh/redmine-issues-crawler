@@ -90,11 +90,10 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 		if c.Selector != nil {
 			issues = Filter(issues, c.Selector.Select)
 		}
-		for i := len(issues) - 1; i >= 0; i-- {
-			err = c.Outputter.Output(issues[i])
-			if err != nil {
-				return err
-			}
+
+		err = c.Output(issues)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -104,6 +103,18 @@ func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
 	return c.Url + "issues.json?sort=updated_on:desc&id:desc" +
 		"&limit=" + strconv.Itoa(c.Limit) +
 		"&updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
+}
+
+// Output outputs fetched issues(sorted by updated_on in desc) in reverse order(updated_on in asc),
+// following Outputter implementation.
+func (c *Crawler) Output(issues []Issue) error {
+	for i := len(issues) - 1; i >= 0; i-- {
+		err := c.Outputter.Output(issues[i])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func Fetch(url string) (*issuesResponse, error) {

@@ -24,6 +24,48 @@ func TestBuildFetchUrl(t *testing.T) {
 	}
 }
 
+type testOutputter struct {
+	Done []Issue
+}
+
+func (to *testOutputter) Output(issue Issue) error {
+	to.Done = append(to.Done, issue)
+	return nil
+}
+
+func TestOutput(t *testing.T) {
+	issue1 := Issue{
+		Id:      1,
+		Subject: "Foo Subject 1",
+	}
+	issue2 := Issue{
+		Id:      2,
+		Subject: "Boo Subject 2",
+	}
+	issue3 := Issue{
+		Id:      3,
+		Subject: "Foo Subject 3",
+	}
+	issues := []Issue{issue1, issue2, issue3}
+
+	to := &testOutputter{
+		Done: make([]Issue, 0, 3),
+	}
+	c := NewCrawler("", 10, 20, to)
+
+	c.Output(issues)
+
+	if to.Done[0] != issue3 {
+		t.Errorf("1st output element should be ID3, but ID%d", to.Done[0].Id)
+	}
+	if to.Done[1] != issue2 {
+		t.Errorf("2nd output element should be ID2, but ID%d", to.Done[1].Id)
+	}
+	if to.Done[2] != issue1 {
+		t.Errorf("3rd output element should be ID1, but ID%d", to.Done[2].Id)
+	}
+}
+
 func TestFilterEmptyIssues(t *testing.T) {
 	issues := make([]Issue, 0)
 	filtered := Filter(issues, func(issue Issue) bool {
