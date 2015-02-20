@@ -36,8 +36,8 @@ func main() {
 		10,
 		20,
 		std,
-		std,
 	)
+	c.Selector = std
 	err := c.Crawl(time.Now().Add(-30 * time.Minute))
 	fmt.Println(err)
 }

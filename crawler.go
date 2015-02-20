@@ -55,7 +55,8 @@ type Crawler struct {
 // The url is Redmines project url.
 // The interval is interval of crawling.
 // The limit is limit on the number of per fetch.
-func NewCrawler(url string, interval int, limit int, outputter Outputter, selector Selector) *Crawler {
+// The outputter is how this Crawler outputs fetched issues.
+func NewCrawler(url string, interval int, limit int, outputter Outputter) *Crawler {
 	if interval < 10 {
 		interval = 10
 	}
@@ -64,7 +65,6 @@ func NewCrawler(url string, interval int, limit int, outputter Outputter, select
 		Url:       url,
 		Limit:     limit,
 		Outputter: outputter,
-		Selector:  selector,
 	}
 	return c
 }
