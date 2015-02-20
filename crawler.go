@@ -60,6 +60,9 @@ func NewCrawler(url string, interval int, limit int, outputter Outputter) *Crawl
 	if interval < 10 {
 		interval = 10
 	}
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
 	c := &Crawler{
 		Interval:  interval,
 		Url:       url,
@@ -70,16 +73,9 @@ func NewCrawler(url string, interval int, limit int, outputter Outputter) *Crawl
 }
 
 func (c *Crawler) Crawl(startTime time.Time) error {
-	url := c.Url
-	if !strings.HasSuffix(c.Url, "/") {
-		url += "/"
-	}
-	url += "issues.json"
-	query := "?sort=updated_on:desc&id:desc" + "&limit=" + strconv.Itoa(c.Limit)
-
 	lastUpdate := startTime
 	for _ = range time.Tick(time.Duration(c.Interval) * time.Second) {
-		fetchUrl := url + query + "&updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
+		fetchUrl := c.BuildFetchUrl(lastUpdate)
 		issuesResp, err := Fetch(fetchUrl)
 		if err != nil {
 			return err
@@ -102,6 +98,12 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 		}
 	}
 	return nil
+}
+
+func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
+	return c.Url + "issues.json?sort=updated_on:desc&id:desc" +
+		"&limit=" + strconv.Itoa(c.Limit) +
+		"&updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
 }
 
 func Fetch(url string) (*issuesResponse, error) {

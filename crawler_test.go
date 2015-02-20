@@ -1,9 +1,28 @@
 package crawler
 
 import (
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
+
+func TestBuildFetchUrl(t *testing.T) {
+	url := "https://example.com/redmine/projects/dummy"
+	limit := 5
+	lastUpdate := time.Date(2015, 2, 20, 20, 30, 30, 0, time.UTC)
+	expected := url + "/" +
+		"issues.json?sort=updated_on:desc&id:desc" +
+		"&limit=" + strconv.Itoa(limit) +
+		"&updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).Format(time.RFC3339)
+
+	c := NewCrawler(url, 10, limit, nil)
+	actual := c.BuildFetchUrl(lastUpdate)
+
+	if expected != actual {
+		t.Errorf("fetch url is invalid. expected : %s, but actual : %s ", expected, actual)
+	}
+}
 
 func TestFilterEmptyIssues(t *testing.T) {
 	issues := make([]Issue, 0)
