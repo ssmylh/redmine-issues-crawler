@@ -99,6 +99,11 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 	return nil
 }
 
+// BuildFetchUrl returns a fetch url.
+// Url is builed As shown below.
+// sort : updated_on in desc, id in desc
+// limit : Crawler.Limit
+// option parameter : set updated_on(UTC, RFC3339) to ">=" + lastUpdate added 1 second
 func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
 	return c.Url + "issues.json?sort=updated_on:desc&id:desc" +
 		"&limit=" + strconv.Itoa(c.Limit) +
