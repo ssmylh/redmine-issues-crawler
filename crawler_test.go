@@ -98,11 +98,11 @@ func TestFilterIssues(t *testing.T) {
 		t.Errorf("filter issues should return %d elements, but %d elements", 2, len(filtered))
 	}
 
-	if issue1 != filtered[0] {
+	if filtered[0] != issue1 {
 		t.Errorf("1st element of filtered issues is not issue1")
 	}
 
-	if issue3 != filtered[1] {
+	if filtered[1] != issue3 {
 		t.Errorf("2nd element of filtered issues is not issue3")
 	}
 }
