@@ -19,10 +19,10 @@ func (so *std) Output(issue crawler.Issue) error {
 	return nil
 }
 
-func (so *std) Select(issues crawler.Issue) bool {
+func (so *std) Select(issue crawler.Issue) bool {
 	ss := []string{"新規", "終了"}
 	for _, s := range ss {
-		if s == issues.Status.Name {
+		if s == issue.Status.Name {
 			return true
 		}
 	}
