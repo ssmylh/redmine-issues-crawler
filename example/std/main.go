@@ -33,11 +33,11 @@ func main() {
 	std := &std{}
 	c := crawler.NewCrawler(
 		"redmine project url",
-		10,
-		20,
+		10, // interval
+		20, // fetch limit
 		std,
 	)
 	c.Selector = std
-	err := c.Crawl(time.Now().Add(-30 * time.Minute))
+	err := c.Crawl(time.Now())
 	fmt.Println(err)
 }
