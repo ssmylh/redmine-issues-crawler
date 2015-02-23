@@ -35,6 +35,41 @@ type Term struct {
 	Name string
 }
 
+type IssuesUrl struct {
+	ProjectUrl string
+	Offset     int
+	Limit      int
+	Sort       string
+	StatusId   string
+}
+
+// String builds url for issues and returns it.
+// In addtion to IssuesUrl properties, it appends updated_on(UTC, RFC3339), too.
+// More precisely, it set ">=" + add 1 second to lastUpdate.
+// The reason why adding 1 second is that it can set ">=" to updated_on, but can not set ">".
+func (iu *IssuesUrl) String(lastUpdate time.Time) string {
+	url := iu.ProjectUrl
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
+	url += "issues.json"
+	url += "?updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
+
+	if iu.Offset > 0 {
+		url += "offset=" + strconv.Itoa(iu.Offset)
+	}
+	if iu.Limit > 0 {
+		url += "&limit=" + strconv.Itoa(iu.Limit)
+	}
+	if iu.Sort != "" {
+		url += "&sort=" + iu.Sort
+	}
+	if iu.StatusId != "" {
+		url += "&status_id=" + iu.StatusId
+	}
+	return url
+}
+
 type Outputter interface {
 	Output(issue Issue) error
 }
@@ -44,29 +79,31 @@ type Selector interface {
 }
 
 type Crawler struct {
-	Url       string
 	Interval  int
-	Limit     int
+	Url       *IssuesUrl
 	Outputter Outputter
 	Selector  Selector
 }
 
 // NewCrawler returs a new Crawler.
-// The url is Redmines project url.
+// The projectUrl is Redmines project url.
 // The interval is interval of crawling.
 // The limit is limit on the number of per fetch.
 // The outputter is how this Crawler outputs fetched issues.
-func NewCrawler(url string, interval int, limit int, outputter Outputter) *Crawler {
+func NewCrawler(projectUrl string, interval int, limit int, outputter Outputter) *Crawler {
 	if interval < 10 {
 		interval = 10
 	}
-	if !strings.HasSuffix(url, "/") {
-		url += "/"
+
+	url := &IssuesUrl{
+		ProjectUrl: projectUrl,
+		Limit:      limit,
+		Sort:       "updated_on:desc,id:desc",
+		StatusId:   "*",
 	}
 	c := &Crawler{
-		Interval:  interval,
 		Url:       url,
-		Limit:     limit,
+		Interval:  interval,
 		Outputter: outputter,
 	}
 	return c
@@ -99,15 +136,9 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 	return nil
 }
 
-// BuildFetchUrl returns a fetch url.
-// Url is builed As shown below.
-// sort : updated_on in desc, id in desc
-// limit : Crawler.Limit
-// option parameter : set updated_on(UTC, RFC3339) to ">=" + lastUpdate added 1 second
+// BuildFetchUrl builds a fetct url from Crawler.Url and returns it.
 func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
-	return c.Url + "issues.json?sort=updated_on:desc&id:desc" +
-		"&limit=" + strconv.Itoa(c.Limit) +
-		"&updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
+	return c.Url.String(lastUpdate)
 }
 
 // Output outputs fetched issues(sorted by updated_on in desc) in reverse order(updated_on in asc),

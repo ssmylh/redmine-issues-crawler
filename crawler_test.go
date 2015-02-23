@@ -9,9 +9,11 @@ import (
 func TestBuildFetchUrl(t *testing.T) {
 	url := "https://example.com/redmine/projects/dummy"
 	expected := url + "/" +
-		"issues.json?sort=updated_on:desc&id:desc" +
+		"issues.json" +
+		"?updated_on=%3E%3D" + "2015-02-20T20:30:31Z" +
 		"&limit=" + "5" +
-		"&updated_on=%3E%3D" + "2015-02-20T20:30:31Z"
+		"&sort=updated_on:desc,id:desc" +
+		"&status_id=*"
 
 	c := NewCrawler(url, 10, 5, nil)
 	lastUpdate := time.Date(2015, 2, 20, 20, 30, 30, 0, time.UTC)
