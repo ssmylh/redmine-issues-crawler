@@ -16,7 +16,7 @@ type hipchatNotifier struct {
 	Settings *settings
 }
 
-func (h *hipchatNotifier) Output(issue crawler.Issue) error {
+func (h *hipchatNotifier) Output(issue *crawler.Issue) error {
 	message, err := h.createMessage(issue)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (h *hipchatNotifier) Output(issue crawler.Issue) error {
 	return nil
 }
 
-func (h *hipchatNotifier) createMessage(issue crawler.Issue) (string, error) {
+func (h *hipchatNotifier) createMessage(issue *crawler.Issue) (string, error) {
 	issueUrl := h.Settings.RedmineProjectUrl
 	if !strings.HasSuffix(issueUrl, "/") {
 		issueUrl += "/"
@@ -52,7 +52,7 @@ func (h *hipchatNotifier) createMessage(issue crawler.Issue) (string, error) {
 		issueUrl), nil
 }
 
-func (h *hipchatNotifier) Select(issues crawler.Issue) bool {
+func (h *hipchatNotifier) Select(issues *crawler.Issue) bool {
 	return true
 }
 

@@ -71,11 +71,11 @@ func (iu *IssuesUrl) String(lastUpdate time.Time) string {
 }
 
 type Outputter interface {
-	Output(issue Issue) error
+	Output(issue *Issue) error
 }
 
 type Selector interface {
-	Select(issue Issue) bool
+	Select(issue *Issue) bool
 }
 
 type Crawler struct {
@@ -145,7 +145,7 @@ func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
 // following Outputter implementation.
 func (c *Crawler) Output(issues []Issue) error {
 	for i := len(issues) - 1; i >= 0; i-- {
-		err := c.Outputter.Output(issues[i])
+		err := c.Outputter.Output(&issues[i])
 		if err != nil {
 			return err
 		}
@@ -169,7 +169,7 @@ func Fetch(url string) (*issuesResponse, error) {
 	return issuesResp, nil
 }
 
-func Filter(issues []Issue, predicate func(Issue) bool) []Issue {
+func Filter(issues []Issue, predicate func(*Issue) bool) []Issue {
 	if len(issues) == 0 {
 		return issues
 	}
@@ -177,7 +177,7 @@ func Filter(issues []Issue, predicate func(Issue) bool) []Issue {
 	capacity := (len(issues) + 1) / 2
 	filtered := make([]Issue, 0, capacity)
 	for _, issue := range issues {
-		if predicate(issue) {
+		if predicate(&issue) {
 			filtered = append(filtered, issue)
 		}
 	}

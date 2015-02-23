@@ -8,7 +8,7 @@ import (
 
 type std struct{}
 
-func (so *std) Output(issue crawler.Issue) error {
+func (so *std) Output(issue *crawler.Issue) error {
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		return err
@@ -19,7 +19,7 @@ func (so *std) Output(issue crawler.Issue) error {
 	return nil
 }
 
-func (so *std) Select(issue crawler.Issue) bool {
+func (so *std) Select(issue *crawler.Issue) bool {
 	ss := []string{"新規", "終了"}
 	for _, s := range ss {
 		if s == issue.Status.Name {

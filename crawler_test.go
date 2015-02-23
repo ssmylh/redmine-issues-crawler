@@ -28,8 +28,8 @@ type testOutputter struct {
 	Done []Issue
 }
 
-func (to *testOutputter) Output(issue Issue) error {
-	to.Done = append(to.Done, issue)
+func (to *testOutputter) Output(issue *Issue) error {
+	to.Done = append(to.Done, *issue)
 	return nil
 }
 
@@ -68,7 +68,7 @@ func TestOutput(t *testing.T) {
 
 func TestFilterEmptyIssues(t *testing.T) {
 	issues := make([]Issue, 0)
-	filtered := Filter(issues, func(issue Issue) bool {
+	filtered := Filter(issues, func(issue *Issue) bool {
 		return true
 	})
 	if len(filtered) != 0 {
@@ -90,7 +90,7 @@ func TestFilterIssues(t *testing.T) {
 		Subject: "Foo Subject 3",
 	}
 	issues := []Issue{issue1, issue2, issue3}
-	filtered := Filter(issues, func(issue Issue) bool {
+	filtered := Filter(issues, func(issue *Issue) bool {
 		return strings.HasPrefix(issue.Subject, "Foo")
 	})
 
