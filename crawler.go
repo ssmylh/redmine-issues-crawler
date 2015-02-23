@@ -85,7 +85,7 @@ type Crawler struct {
 	Selector  Selector
 }
 
-// NewCrawler returs a new Crawler.
+// NewCrawler returns a new Crawler.
 // The projectUrl is Redmines project url.
 // The interval is interval of crawling.
 // The limit is limit on the number of per fetch.
