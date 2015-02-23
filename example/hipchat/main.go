@@ -39,7 +39,7 @@ func (h *hipchatNotifier) Output(issue *crawler.Issue) error {
 }
 
 func (h *hipchatNotifier) createMessage(issue *crawler.Issue) (string, error) {
-	issueUrl := h.Settings.RedmineProjectUrl
+	issueUrl := h.Settings.RedmineEndpoint
 	if !strings.HasSuffix(issueUrl, "/") {
 		issueUrl += "/"
 	}
@@ -60,7 +60,7 @@ type settings struct {
 	RoomId                string
 	RoomNotificationToken string
 	NotificationColor     string
-	RedmineProjectUrl     string
+	RedmineEndpoint       string
 	CrawlInterval         int
 	FetchLimit            int
 }
@@ -92,7 +92,7 @@ func main() {
 		Settings: settings,
 	}
 	c := crawler.NewCrawler(
-		settings.RedmineProjectUrl,
+		settings.RedmineEndpoint,
 		settings.CrawlInterval,
 		settings.FetchLimit,
 		h,

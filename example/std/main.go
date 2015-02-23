@@ -32,7 +32,7 @@ func (so *std) Select(issue *crawler.Issue) bool {
 func main() {
 	std := &std{}
 	c := crawler.NewCrawler(
-		"redmine project url",
+		"your redmine's endpoint(redmine's home url)",
 		10, // interval
 		20, // fetch limit
 		std,

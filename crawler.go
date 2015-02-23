@@ -36,11 +36,11 @@ type Term struct {
 }
 
 type IssuesUrl struct {
-	ProjectUrl string
-	Offset     int
-	Limit      int
-	Sort       string
-	StatusId   string
+	Endpoint string
+	Offset   int
+	Limit    int
+	Sort     string
+	StatusId string
 }
 
 // String builds url for issues and returns it.
@@ -48,7 +48,7 @@ type IssuesUrl struct {
 // More precisely, it set ">=" + add 1 second to lastUpdate.
 // The reason why adding 1 second is that it can set ">=" to updated_on, but can not set ">".
 func (iu *IssuesUrl) String(lastUpdate time.Time) string {
-	url := iu.ProjectUrl
+	url := iu.Endpoint
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
@@ -86,20 +86,20 @@ type Crawler struct {
 }
 
 // NewCrawler returns a new Crawler.
-// The projectUrl is Redmines project url.
+// The endpoint is Redmine's endpoint(Redmine's home URL).
 // The interval is interval of crawling.
 // The limit is limit on the number of per fetch.
 // The outputter is how this Crawler outputs fetched issues.
-func NewCrawler(projectUrl string, interval int, limit int, outputter Outputter) *Crawler {
+func NewCrawler(endpoint string, interval int, limit int, outputter Outputter) *Crawler {
 	if interval < 10 {
 		interval = 10
 	}
 
 	url := &IssuesUrl{
-		ProjectUrl: projectUrl,
-		Limit:      limit,
-		Sort:       "updated_on:desc,id:desc",
-		StatusId:   "*",
+		Endpoint: endpoint,
+		Limit:    limit,
+		Sort:     "updated_on:desc,id:desc",
+		StatusId: "*",
 	}
 	c := &Crawler{
 		Url:       url,

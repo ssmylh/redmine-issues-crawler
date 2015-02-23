@@ -17,7 +17,7 @@ As follows, create `settings.json` into the directory where executable file exis
     "RoomId": "Room id or room name",
     "RoomNotificationToken": "Room Notification Tokens",
     "NotificationColor": "Background color for message. Choices are yellow, green, red, purple, gray and random.",
-    "RedmineProjectUrl": "Your Redmine's project URL",
+    "RedmineEndpoint": "Your Redmine's endpoint(Redmine's home url)",
     "CrawlInterval": "The interval(sec) of crawl",
     "FetchLimit": 20 "The number of per fetch."
 }
