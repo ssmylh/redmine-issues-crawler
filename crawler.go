@@ -44,19 +44,17 @@ type IssuesUrl struct {
 }
 
 // String builds url for issues and returns it.
-// In addtion to IssuesUrl properties, it appends updated_on(UTC, RFC3339), too.
-// More precisely, it set ">=" + add 1 second to lastUpdate.
-// The reason why adding 1 second is that it can set ">=" to updated_on, but can not set ">".
 func (iu *IssuesUrl) String(lastUpdate time.Time) string {
 	url := iu.Endpoint
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
 	url += "issues.json"
-	url += "?updated_on=%3E%3D" + lastUpdate.Add(1*time.Second).UTC().Format(time.RFC3339)
 
 	if iu.Offset > 0 {
-		url += "offset=" + strconv.Itoa(iu.Offset)
+		url += "?offset=" + strconv.Itoa(iu.Offset)
+	} else {
+		url += "?offset=0"
 	}
 	if iu.Limit > 0 {
 		url += "&limit=" + strconv.Itoa(iu.Limit)
@@ -118,7 +116,11 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 			return err
 		}
 
-		issues := issuesResp.Issues
+		// Filter issues with lastUpdate (this is wasteful), because some redmine does not support timestamp query about updated_on.
+		issues := Filter(issuesResp.Issues, func(issue *Issue) bool {
+			return issue.UpdatedOn.UTC().After(lastUpdate)
+		})
+
 		if len(issues) == 0 {
 			continue
 		}

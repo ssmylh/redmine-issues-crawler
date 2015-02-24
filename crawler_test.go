@@ -10,7 +10,7 @@ func TestBuildFetchUrl(t *testing.T) {
 	url := "https://example.com/redmine"
 	expected := url + "/" +
 		"issues.json" +
-		"?updated_on=%3E%3D" + "2015-02-20T20:30:31Z" +
+		"?offset=0" +
 		"&limit=" + "5" +
 		"&sort=updated_on:desc,id:desc" +
 		"&status_id=*"
