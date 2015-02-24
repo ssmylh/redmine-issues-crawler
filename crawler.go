@@ -18,9 +18,9 @@ type Issue struct {
 	Category    Term
 	Subject     string
 	Description string
-	AssignedTo  Term      `json:"assigned_to"`
-	CreatedOn   time.Time `json:"created_on"`
-	UpdatedOn   time.Time `json:"updated_on"`
+	AssignedTo  Term   `json:"assigned_to"`
+	CreatedOn   string `json:"created_on"`
+	UpdatedOn   string `json:"updated_on"`
 }
 
 type issuesResponse struct {
@@ -118,13 +118,19 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 
 		// Filter issues with lastUpdate (this is wasteful), because some redmine does not support timestamp query about updated_on.
 		issues := Filter(issuesResp.Issues, func(issue *Issue) bool {
-			return issue.UpdatedOn.UTC().After(lastUpdate)
+			updatedOn, err := ToUTCTime(issue.UpdatedOn)
+			if err != nil {
+				return false
+			}
+			return updatedOn.After(lastUpdate)
 		})
 
 		if len(issues) == 0 {
 			continue
 		}
-		lastUpdate = issues[0].UpdatedOn
+
+		// Ignore err. Because issues which have unparsed updated_on, are filtered.
+		lastUpdate, _ = ToUTCTime(issues[0].UpdatedOn)
 
 		if c.Selector != nil {
 			issues = Filter(issues, c.Selector.Select)
@@ -184,4 +190,21 @@ func Filter(issues []Issue, predicate func(*Issue) bool) []Issue {
 		}
 	}
 	return filtered
+}
+
+// ToUTCTime parse s and return UTC time.
+// The following formats can be parsed.
+// - "2006-01-02T15:04:05Z07:00" (RFC3339)
+// - "2006/01/02 15:04:05 -0700"
+func ToUTCTime(s string) (time.Time, error) {
+	t1, err := time.Parse(time.RFC3339, s)
+	if err == nil {
+		return t1.UTC(), nil
+	}
+
+	t2, err := time.Parse("2006/01/02 15:04:05 -0700", s)
+	if err == nil {
+		return t2.UTC(), nil
+	}
+	return t2, err
 }

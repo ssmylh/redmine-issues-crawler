@@ -9,13 +9,8 @@ import (
 type std struct{}
 
 func (so *std) Output(issue *crawler.Issue) error {
-	jst, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		return err
-	}
-
 	fmt.Println(issue.Id, issue.Tracker.Name, issue.Status.Name, issue.Priority.Name,
-		issue.Subject, issue.UpdatedOn.In(jst))
+		issue.Subject, issue.UpdatedOn)
 	return nil
 }
 

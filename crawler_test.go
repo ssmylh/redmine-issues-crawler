@@ -106,3 +106,19 @@ func TestFilterIssues(t *testing.T) {
 		t.Errorf("2nd element of filtered issues is not issue3")
 	}
 }
+
+func TestToUTCTime_RFC3339(t *testing.T) {
+	s := "2015-02-24T15:58:38Z"
+	_, err := ToUTCTime(s)
+	if err != nil {
+		t.Errorf("could not convert %s into to UTC Time", s)
+	}
+}
+
+func TestToUTCTime_JST(t *testing.T) {
+	s := "2015/02/25 01:02:03 +0900"
+	_, err := ToUTCTime(s)
+	if err != nil {
+		t.Errorf("could not convert %s into to UTC Time", s)
+	}
+}
