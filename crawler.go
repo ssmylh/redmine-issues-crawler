@@ -117,13 +117,7 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 		}
 
 		// Filter issues with lastUpdate (this is wasteful), because some redmine does not support timestamp query about updated_on.
-		issues := Filter(issuesResp.Issues, func(issue *Issue) bool {
-			updatedOn, err := ToUTCTime(issue.UpdatedOn)
-			if err != nil {
-				return false
-			}
-			return updatedOn.After(lastUpdate)
-		})
+		issues := c.filterWithUpdatedOnAfter(issuesResp.Issues, lastUpdate)
 
 		if len(issues) == 0 {
 			continue
@@ -147,6 +141,18 @@ func (c *Crawler) Crawl(startTime time.Time) error {
 // BuildFetchUrl builds a fetct url from Crawler.Url and returns it.
 func (c *Crawler) BuildFetchUrl(lastUpdate time.Time) string {
 	return c.Url.String(lastUpdate)
+}
+
+// filterWithUpdatedOnAfter filters issues and returns issues which have updated_on after lastUpdate.
+func (c *Crawler) filterWithUpdatedOnAfter(issues []Issue, lastUpdate time.Time) []Issue {
+	filtered := Filter(issues, func(issue *Issue) bool {
+		updatedOn, err := ToUTCTime(issue.UpdatedOn)
+		if err != nil {
+			return false
+		}
+		return updatedOn.After(lastUpdate)
+	})
+	return filtered
 }
 
 // Output outputs fetched issues(sorted by updated_on in desc) in reverse order(updated_on in asc),

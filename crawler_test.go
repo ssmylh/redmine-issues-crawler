@@ -122,3 +122,38 @@ func TestToUTCTime_JST(t *testing.T) {
 		t.Errorf("could not convert %s into to UTC Time", s)
 	}
 }
+
+func TestFilterWithUpdatedOnAfter(t *testing.T) {
+	lastUpdate := time.Date(2015, 2, 28, 8, 30, 30, 0, time.UTC)
+	issue1 := Issue{
+		Id:        1,
+		Subject:   "Foo Subject 1",
+		UpdatedOn: lastUpdate.Add(2 * time.Minute).Format(time.RFC3339),
+	}
+	issue2 := Issue{
+		Id:        2,
+		Subject:   "Boo Subject 2",
+		UpdatedOn: lastUpdate.Add(1 * time.Minute).Format(time.RFC3339),
+	}
+	issue3 := Issue{
+		Id:        3,
+		Subject:   "Foo Subject 3",
+		UpdatedOn: lastUpdate.Format(time.RFC3339),
+	}
+	issues := []Issue{issue1, issue2, issue3}
+	c := NewCrawler("", 10, 20, nil)
+
+	filtered := c.filterWithUpdatedOnAfter(issues, lastUpdate)
+
+	if len(filtered) != 2 {
+		t.Errorf("filtered issues should return %d elements, but %d elements", 2, len(filtered))
+	}
+
+	if filtered[0] != issue1 {
+		t.Errorf("1st element of filtered issues is not issue1")
+	}
+
+	if filtered[1] != issue2 {
+		t.Errorf("2nd element of filtered issues is not issue2")
+	}
+}
