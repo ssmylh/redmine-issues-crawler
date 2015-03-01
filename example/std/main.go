@@ -28,6 +28,7 @@ func main() {
 	std := &std{}
 	c := crawler.NewCrawler(
 		"your redmine's endpoint(redmine's home url)",
+		"your redmine's API key",
 		10, // interval
 		20, // fetch limit
 		std,

@@ -37,6 +37,7 @@ type Term struct {
 
 type IssuesUrl struct {
 	Endpoint string
+	Key      string
 	Offset   int
 	Limit    int
 	Sort     string
@@ -49,12 +50,9 @@ func (iu *IssuesUrl) String(lastUpdate time.Time) string {
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
-	url += "issues.json"
-
+	url += "issues.json?key=" + iu.Key
 	if iu.Offset > 0 {
-		url += "?offset=" + strconv.Itoa(iu.Offset)
-	} else {
-		url += "?offset=0"
+		url += "&offset=" + strconv.Itoa(iu.Offset)
 	}
 	if iu.Limit > 0 {
 		url += "&limit=" + strconv.Itoa(iu.Limit)
@@ -85,16 +83,18 @@ type Crawler struct {
 
 // NewCrawler returns a new Crawler.
 // The endpoint is Redmine's endpoint(Redmine's home URL).
+// The key is Redmine's API key. If required, please set.
 // The interval is interval of crawling.
 // The limit is limit on the number of per fetch.
 // The outputter is how this Crawler outputs fetched issues.
-func NewCrawler(endpoint string, interval int, limit int, outputter Outputter) *Crawler {
+func NewCrawler(endpoint string, key string, interval int, limit int, outputter Outputter) *Crawler {
 	if interval < 10 {
 		interval = 10
 	}
 
 	url := &IssuesUrl{
 		Endpoint: endpoint,
+		Key:      key,
 		Limit:    limit,
 		Sort:     "updated_on:desc,id:desc",
 		StatusId: "*",

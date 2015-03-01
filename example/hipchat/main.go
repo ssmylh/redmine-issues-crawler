@@ -61,6 +61,7 @@ type settings struct {
 	RoomNotificationToken string
 	NotificationColor     string
 	RedmineEndpoint       string
+	RedmineAPIKey         string
 	CrawlInterval         int
 	FetchLimit            int
 }
@@ -93,6 +94,7 @@ func main() {
 	}
 	c := crawler.NewCrawler(
 		settings.RedmineEndpoint,
+		settings.RedmineAPIKey,
 		settings.CrawlInterval,
 		settings.FetchLimit,
 		h,

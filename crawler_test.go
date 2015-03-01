@@ -8,14 +8,15 @@ import (
 
 func TestBuildFetchUrl(t *testing.T) {
 	url := "https://example.com/redmine"
+	key := "aaabbbcccxxxyyyzzz"
 	expected := url + "/" +
 		"issues.json" +
-		"?offset=0" +
+		"?key=" + key +
 		"&limit=" + "5" +
 		"&sort=updated_on:desc,id:desc" +
 		"&status_id=*"
 
-	c := NewCrawler(url, 10, 5, nil)
+	c := NewCrawler(url, key, 10, 5, nil)
 	lastUpdate := time.Date(2015, 2, 20, 20, 30, 30, 0, time.UTC)
 	actual := c.BuildFetchUrl(lastUpdate)
 
@@ -51,7 +52,7 @@ func TestOutput(t *testing.T) {
 	to := &testOutputter{
 		Done: make([]Issue, 0, 3),
 	}
-	c := NewCrawler("", 10, 20, to)
+	c := NewCrawler("", "", 10, 20, to)
 
 	c.Output(issues)
 
@@ -141,7 +142,7 @@ func TestFilterWithUpdatedOnAfter(t *testing.T) {
 		UpdatedOn: lastUpdate.Format(time.RFC3339),
 	}
 	issues := []Issue{issue1, issue2, issue3}
-	c := NewCrawler("", 10, 20, nil)
+	c := NewCrawler("", "", 10, 20, nil)
 
 	filtered := c.filterWithUpdatedOnAfter(issues, lastUpdate)
 
