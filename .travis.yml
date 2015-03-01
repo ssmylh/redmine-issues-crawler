@@ -2,3 +2,7 @@ language: go
 go:
   - 1.4
   - tip
+install:
+  - go get github.com/tbruyelle/hipchat-go/hipchat
+script:
+  - go test ./...
