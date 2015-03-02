@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -173,6 +174,10 @@ func Fetch(url string) (*issuesResponse, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP Status Code is %d.", resp.StatusCode)
+	}
 
 	dec := json.NewDecoder(resp.Body)
 	issuesResp := &issuesResponse{}
