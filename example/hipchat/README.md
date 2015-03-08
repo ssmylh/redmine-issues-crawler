@@ -4,8 +4,8 @@ This example is notify hipchat of fetched issues.
 
 ## Dependency
 
-```go
-import "github.com/tbruyelle/hipchat-go/hipchat"
+```
+go get github.com/tbruyelle/hipchat-go/hipchat
 ```
 
 ## Settings
